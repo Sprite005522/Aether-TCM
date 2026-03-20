@@ -1,0 +1,29 @@
+syntax = "proto3"; // 使用最新的 proto3 语法
+
+// 生成 Java 代码时的配置，方便以后 IDEA 识别
+option java_multiple_files = true;
+option java_package = "com.aether.tcm.grpc";
+option java_outer_classname = "EngineProto";
+
+package aether;
+
+// 1. 定义推演请求：我们要传给 Python 什么？
+message SimulationRequest {
+    string herb_name = 1;       // 药材名称 (如: 青蒿)
+    string mol_structure = 2;   // 分子 SMILES 码 (分子的“身份证”)
+    float dosage = 3;           // 模拟剂量 (mg)
+}
+
+// 2. 定义推演结果：Python 要回传给 Java 什么？
+message SimulationResponse {
+    float binding_energy = 1;   // 分子结合能 (数值越低通常代表结合越稳)
+    string molecular_formula = 2; // 分子式
+    bool toxicity_risk = 3;     // 是否触发毒性预警
+    string detail_report = 4;   // 详细推演文本描述
+}
+
+// 3. 定义服务接口：Java 如何“呼叫” Python？
+service TcmEngineService {
+    // 远程调用方法：输入请求，返回响应
+    rpc RunMolecularSimulation (SimulationRequest) returns (SimulationResponse);
+}
